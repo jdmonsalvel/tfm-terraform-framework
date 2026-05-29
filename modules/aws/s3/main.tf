@@ -9,7 +9,7 @@ resource "aws_s3_bucket" "bucket" {
   force_destroy = each.value.force_destroy
 
   dynamic "object_lock_configuration" {
-    for_each = each.value.object_lock != null && each.value.object_lock.enabled ? [each.value.object_lock] : []
+    for_each = try(each.value.object_lock.enabled, false) ? [each.value.object_lock] : []
     content {
       object_lock_enabled = "Enabled"
     }

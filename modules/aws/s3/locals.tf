@@ -21,7 +21,7 @@ locals {
 
   # Buckets con Object Lock
   object_lock_buckets = {
-    for k, v in var.s3_buckets : k => v if v.object_lock != null && v.object_lock.enabled
+    for k, v in var.s3_buckets : k => v if try(v.object_lock.enabled, false)
   }
 
   # Aplanar lifecycle rules: { "bucket_key-rule_id" => {...} }
