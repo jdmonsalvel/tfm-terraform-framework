@@ -3,6 +3,12 @@ variable "account_id" {
   default = ""
 }
 
+variable "devops_service_account_id" {
+  description = "Account ID donde vive el state bucket (multi-cuenta). null = usar account_id de la cuenta gestionada."
+  type        = string
+  default     = null
+}
+
 variable "cicd_role_name" {
   description = "Nombre del rol IAM a asumir por el provider AWS. null = usar credenciales del runner directamente (OIDC)."
   type        = string
