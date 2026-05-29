@@ -1,12 +1,14 @@
 module "vpc" {
-  source = "./modules/aws/vpc"
-  tags   = local.tags
-  vpcs   = var.vpcs
-  region = var.region
+  source      = "./modules/aws/vpc"
+  tags        = local.tags
+  name_prefix = local.name_prefix
+  vpcs        = var.vpcs
+  region      = var.region
 }
 module "subnet" {
   source          = "./modules/aws/subnet"
   tags            = local.tags
+  name_prefix     = local.name_prefix
   subnets         = var.subnets
   region          = var.region
   vpc_ids         = local.vpc_ids
@@ -15,6 +17,7 @@ module "subnet" {
 module "network_acl" {
   source       = "./modules/aws/network-acl"
   tags         = local.tags
+  name_prefix  = local.name_prefix
   network_acls = var.network_acls
   vpc_ids      = local.vpc_ids
 }
@@ -29,6 +32,7 @@ module "dhcp_option_set" {
 module "internet_gateways" {
   source            = "./modules/aws/intenet-gw"
   tags              = local.tags
+  name_prefix       = local.name_prefix
   internet_gateways = var.internet_gateways
   vpc_ids           = local.vpc_ids
 }
@@ -36,6 +40,7 @@ module "nat_gw" {
   source       = "./modules/aws/nat-gw"
   region       = var.region
   tags         = local.tags
+  name_prefix  = local.name_prefix
   nat_gateways = var.nat_gateways
   subnet_ids   = local.subnet_ids
   depends_on   = [local.subnet_ids]
@@ -43,6 +48,7 @@ module "nat_gw" {
 module "security_group" {
   source          = "./modules/aws/security-group"
   tags            = local.tags
+  name_prefix     = local.name_prefix
   vpc_ids         = local.vpc_ids
   security_groups = var.security_groups
   depends_on      = [local.vpc_ids]
@@ -63,6 +69,7 @@ module "subnet_route_table" {
   subnet_ids                     = local.subnet_ids
   transit_gateway_ids            = module.transit_gateway.transit_gateway_ids
   tags                           = local.tags
+  name_prefix                    = local.name_prefix
   transit_gateway_attachment_ids = module.transit_gateway_attachment.transit_gateway_attachment_ids
   internet_gateway_ids           = module.internet_gateways.internet_gateway_ids
   nat_gateway_ids                = module.nat_gw.nat_gateway_ids
@@ -114,6 +121,7 @@ module "iam" {
   count              = (length(var.iam_roles) + length(var.iam_policies) + length(var.iam_users) + length(var.iam_groups) + length(var.iam_oidc_providers)) > 0 ? 1 : 0
   source             = "./modules/aws/iam"
   tags               = local.tags
+  name_prefix        = local.name_prefix
   iam_roles          = var.iam_roles
   iam_policies       = var.iam_policies
   iam_users          = var.iam_users
@@ -132,6 +140,7 @@ module "eks" {
   count          = length(var.eks) > 0 ? 1 : 0
   source         = "./modules/aws/eks"
   tags           = local.tags
+  name_prefix    = local.name_prefix
   backend_bucket = var.eks_backend_bucket
   backend_region = var.eks_backend_region
 
@@ -153,16 +162,18 @@ module "eks" {
 }
 
 module "s3" {
-  count      = length(var.s3_buckets) > 0 ? 1 : 0
-  source     = "./modules/aws/s3"
-  tags       = local.tags
-  s3_buckets = var.s3_buckets
+  count       = length(var.s3_buckets) > 0 ? 1 : 0
+  source      = "./modules/aws/s3"
+  tags        = local.tags
+  name_prefix = local.name_prefix
+  s3_buckets  = var.s3_buckets
 }
 
 module "ecr" {
   count                = length(var.ecr_repositories) > 0 ? 1 : 0
   source               = "./modules/aws/ecr"
   tags                 = local.tags
+  name_prefix          = local.name_prefix
   ecr_repositories     = var.ecr_repositories
   registry_scanning    = var.registry_scanning
   registry_replication = var.registry_replication
@@ -193,6 +204,7 @@ module "route53" {
   count           = (length(var.route53_zones) + length(var.route53_records)) > 0 ? 1 : 0
   source          = "./modules/aws/route53"
   tags            = local.tags
+  name_prefix     = local.name_prefix
   route53_zones   = var.route53_zones
   route53_records = var.route53_records
 }
@@ -201,6 +213,7 @@ module "acm" {
   count            = length(var.acm_certificates) > 0 ? 1 : 0
   source           = "./modules/aws/acm"
   tags             = local.tags
+  name_prefix      = local.name_prefix
   acm_certificates = var.acm_certificates
   zone_ids         = length(module.route53) > 0 ? module.route53[0].zone_ids : {}
 }
@@ -230,6 +243,7 @@ module "secrets_manager" {
   count                   = length(var.secrets_manager_secrets) > 0 ? 1 : 0
   source                  = "./modules/aws/secrets-manager"
   tags                    = local.tags
+  name_prefix             = local.name_prefix
   secrets_manager_secrets = var.secrets_manager_secrets
 }
 

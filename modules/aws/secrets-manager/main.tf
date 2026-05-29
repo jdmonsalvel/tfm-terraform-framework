@@ -14,7 +14,7 @@ resource "aws_secretsmanager_secret" "secret" {
   kms_key_id              = each.value.kms_key_id
   recovery_window_in_days = each.value.recovery_window_in_days
 
-  tags = merge(var.tags, each.value.tags, { Name = each.value.name })
+  tags = merge(var.tags, each.value.tags, { Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name })
 }
 
 resource "aws_secretsmanager_secret_version" "secret" {

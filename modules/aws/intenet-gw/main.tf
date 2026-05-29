@@ -6,7 +6,7 @@ resource "aws_internet_gateway" "internet_gateway" {
   tags = merge(
     var.tags,
     {
-      Name = "${each.value.name}"
+      Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name
     }
   )
 }

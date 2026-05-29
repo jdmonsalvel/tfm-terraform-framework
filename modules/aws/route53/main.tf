@@ -10,7 +10,7 @@ resource "aws_route53_zone" "public" {
   delegation_set_id = each.value.delegation_set_id
   force_destroy     = each.value.force_destroy
 
-  tags = merge(var.tags, each.value.tags, { Name = each.value.name })
+  tags = merge(var.tags, each.value.tags, { Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name })
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ resource "aws_route53_zone" "private" {
     }
   }
 
-  tags = merge(var.tags, each.value.tags, { Name = each.value.name })
+  tags = merge(var.tags, each.value.tags, { Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name })
 }
 
 # ──────────────────────────────────────────────────────────────────────────────

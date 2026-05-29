@@ -2,7 +2,7 @@ resource "aws_lb" "this" {
   #checkov:skip=CKV_AWS_91:Access logging requires caller-supplied S3 bucket; enable via alb_access_logs in tfvars
   #checkov:skip=CKV_AWS_150:Deletion protection disabled by design; caller controls lifecycle
   for_each                   = var.autoscaling_groups
-  name                       = "${each.value.name}-alb"
+  name                       = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-alb" : "${each.value.name}-alb"
   internal                   = each.value.alb_internal
   load_balancer_type         = "application"
   security_groups            = each.value.alb_security_groups != null ? flatten([for sg_name in each.value.alb_security_groups : [for k, v in var.security_groups : v if can(regex(sg_name, k))]]) : []
@@ -11,14 +11,14 @@ resource "aws_lb" "this" {
   drop_invalid_header_fields = true
   enable_deletion_protection = false
   tags = merge(each.value.tags, {
-    Name = "${each.value.name}-alb"
+    Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-alb" : "${each.value.name}-alb"
   })
 }
 
 resource "aws_lb_target_group" "this" {
   for_each = var.autoscaling_groups
   region   = var.region
-  name     = "${each.value.name}-tg"
+  name     = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-tg" : "${each.value.name}-tg"
   port     = each.value.listener_port_http
   protocol = "HTTP"
   vpc_id   = var.vpc_ids[each.value.vpc_name]
@@ -45,7 +45,7 @@ resource "aws_lb_target_group" "this" {
   }
 
   tags = merge(each.value.tags, {
-    Name = "${each.value.name}-tg"
+    Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-tg" : "${each.value.name}-tg"
   })
 }
 
@@ -81,7 +81,7 @@ resource "aws_launch_template" "this" {
   #checkov:skip=CKV_AWS_79:imdsv2_required defaults to true in variables.tf; http_tokens="required" is the default path
   for_each               = var.autoscaling_groups
   region                 = var.region
-  name                   = "${each.value.name}-lt"
+  name                   = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-lt" : "${each.value.name}-lt"
   image_id               = each.value.ami_id
   instance_type          = each.value.instance_type
   key_name               = each.value.key_pair != null && contains(keys(var.keypairs), each.value.key_pair) ? var.keypairs[each.value.key_pair] : null
@@ -108,19 +108,19 @@ resource "aws_launch_template" "this" {
   tag_specifications {
     resource_type = "instance"
     tags = merge(each.value.tags, {
-      Name = "${each.value.name}-instance"
+      Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-instance" : "${each.value.name}-instance"
     })
   }
 
   tags = merge(each.value.tags, {
-    Name = "${each.value.name}-lt"
+    Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-lt" : "${each.value.name}-lt"
   })
 }
 
 resource "aws_autoscaling_group" "this" {
   for_each            = var.autoscaling_groups
   region              = var.region
-  name                = "${each.value.name}-asg"
+  name                = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-asg" : "${each.value.name}-asg"
   desired_capacity    = each.value.desired_capacity
   min_size            = each.value.min_size
   max_size            = each.value.max_size
@@ -137,7 +137,7 @@ resource "aws_autoscaling_group" "this" {
   }
 
   dynamic "tag" {
-    for_each = merge(each.value.tags, { Name = "${each.value.name}-asg" })
+    for_each = merge(each.value.tags, { Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-asg" : "${each.value.name}-asg" })
     content {
       key                 = tag.key
       value               = tag.value
@@ -154,7 +154,7 @@ locals {
 resource "aws_autoscaling_policy" "scale_up" {
   for_each               = local.scaling_enabled
   region                 = var.region
-  name                   = "${each.value.name}-scale-up"
+  name                   = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-scale-up" : "${each.value.name}-scale-up"
   autoscaling_group_name = aws_autoscaling_group.this[each.key].name
   adjustment_type        = "ChangeInCapacity"
   scaling_adjustment     = each.value.scale_up_adjustment
@@ -163,7 +163,7 @@ resource "aws_autoscaling_policy" "scale_up" {
 
 resource "aws_autoscaling_policy" "scale_down" {
   for_each               = local.scaling_enabled
-  name                   = "${each.value.name}-scale-down"
+  name                   = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-scale-down" : "${each.value.name}-scale-down"
   region                 = var.region
   autoscaling_group_name = aws_autoscaling_group.this[each.key].name
   adjustment_type        = "ChangeInCapacity"
@@ -173,7 +173,7 @@ resource "aws_autoscaling_policy" "scale_down" {
 
 resource "aws_cloudwatch_metric_alarm" "high_cpu" {
   for_each            = local.scaling_enabled
-  alarm_name          = "${each.value.name}-high-cpu"
+  alarm_name          = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-high-cpu" : "${each.value.name}-high-cpu"
   region              = var.region
   alarm_description   = "Scale up on high CPU utilization"
   namespace           = "AWS/EC2"
@@ -191,13 +191,13 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
   alarm_actions = [aws_autoscaling_policy.scale_up[each.key].arn]
   ok_actions    = []
   tags = merge(each.value.tags, {
-    Name = "${each.value.name}-high-cpu"
+    Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-high-cpu" : "${each.value.name}-high-cpu"
   })
 }
 
 resource "aws_cloudwatch_metric_alarm" "low_cpu" {
   for_each            = local.scaling_enabled
-  alarm_name          = "${each.value.name}-low-cpu"
+  alarm_name          = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-low-cpu" : "${each.value.name}-low-cpu"
   region              = var.region
   alarm_description   = "Scale down on low CPU utilization"
   namespace           = "AWS/EC2"
@@ -215,6 +215,6 @@ resource "aws_cloudwatch_metric_alarm" "low_cpu" {
   alarm_actions = [aws_autoscaling_policy.scale_down[each.key].arn]
   ok_actions    = []
   tags = merge(each.value.tags, {
-    Name = "${each.value.name}-low-cpu"
+    Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-low-cpu" : "${each.value.name}-low-cpu"
   })
 }

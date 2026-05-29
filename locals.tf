@@ -6,6 +6,7 @@ locals {
     Project     = var.project
   }
   framework_version = coalesce(var.terraform_framework_version, "unset")
+  name_prefix       = "${var.project}-${var.environment}"
 }
 
 locals {

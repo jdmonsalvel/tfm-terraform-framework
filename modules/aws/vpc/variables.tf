@@ -20,3 +20,8 @@ variable "region" {
   type    = string
   default = null
 }
+variable "name_prefix" {
+  description = "Prefix applied to resource names: project-environment"
+  type        = string
+  default     = ""
+}

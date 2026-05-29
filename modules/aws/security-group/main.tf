@@ -1,7 +1,7 @@
 resource "aws_security_group" "security_group" {
   for_each = var.security_groups
 
-  name        = each.value.name
+  name        = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name
   description = each.value.description
   vpc_id = (
     each.value.vpc_name == null || each.value.vpc_name == "" ? (
@@ -13,7 +13,7 @@ resource "aws_security_group" "security_group" {
   tags = merge(
     var.tags,
     {
-      Name = "${each.value.name}"
+      Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name
     }
   )
   dynamic "ingress" {

@@ -8,7 +8,7 @@ resource "aws_vpc" "vpc" {
   tags = merge(
     var.tags,
     {
-      Name = "${each.value.name}"
+      Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name
     }
   )
 }
@@ -22,7 +22,7 @@ resource "aws_flow_log" "local" {
   tags = merge(
     var.tags,
     {
-      Name = "${each.value.name}-flow-log"
+      Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}-flow-log" : "${each.value.name}-flow-log"
     }
   )
 }

@@ -34,3 +34,9 @@ variable "wait_for_validation" {
   type    = bool
   default = false
 }
+
+variable "name_prefix" {
+  description = "Prefix applied to resource names: project-environment"
+  type        = string
+  default     = ""
+}

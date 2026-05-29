@@ -110,3 +110,9 @@ variable "s3_buckets" {
   }))
   default = {}
 }
+
+variable "name_prefix" {
+  description = "Prefix applied to resource names: project-environment"
+  type        = string
+  default     = ""
+}

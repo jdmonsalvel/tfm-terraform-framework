@@ -30,3 +30,9 @@ variable "secrets_manager_secrets" {
     error_message = "Cada secret con generate_password = false requiere secret_string."
   }
 }
+
+variable "name_prefix" {
+  description = "Prefix applied to resource names: project-environment"
+  type        = string
+  default     = ""
+}

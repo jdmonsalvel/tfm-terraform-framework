@@ -64,7 +64,7 @@ resource "aws_iam_role" "role" {
     )
   })
 
-  tags = merge(var.tags, each.value.tags, { Name = each.value.name })
+  tags = merge(var.tags, each.value.tags, { Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name })
 }
 
 resource "aws_iam_role_policy_attachment" "role_managed" {
@@ -91,7 +91,7 @@ resource "aws_iam_instance_profile" "profile" {
   for_each = local.instance_profile_roles
   name     = each.value.name
   role     = aws_iam_role.role[each.key].name
-  tags     = merge(var.tags, each.value.tags, { Name = each.value.name })
+  tags     = merge(var.tags, each.value.tags, { Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name })
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -104,7 +104,7 @@ resource "aws_iam_policy" "policy" {
   description = each.value.description
   path        = each.value.path
   policy      = each.value.policy
-  tags        = merge(var.tags, each.value.tags, { Name = each.value.name })
+  tags        = merge(var.tags, each.value.tags, { Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name })
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -116,7 +116,7 @@ resource "aws_iam_user" "user" {
   name          = each.value.name
   path          = each.value.path
   force_destroy = each.value.force_destroy
-  tags          = merge(var.tags, each.value.tags, { Name = each.value.name })
+  tags          = merge(var.tags, each.value.tags, { Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name })
 }
 
 resource "aws_iam_user_policy_attachment" "user_managed" {

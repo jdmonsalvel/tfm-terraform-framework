@@ -7,7 +7,7 @@ module "iam" {
   for_each = var.eks
   source   = "./modules/iam"
 
-  cluster_name      = each.key
+  cluster_name      = var.name_prefix != "" ? "${var.name_prefix}-${each.key}" : each.key
   karpenter_enabled = try(each.value.addons.karpenter, false)
   tags              = merge(var.tags, try(each.value.tags, {}))
 }
@@ -23,7 +23,7 @@ module "cluster" {
   for_each = var.eks
   source   = "./modules/cluster"
 
-  cluster_name     = each.key
+  cluster_name     = var.name_prefix != "" ? "${var.name_prefix}-${each.key}" : each.key
   cluster_role_arn = module.iam[each.key].cluster_role_arn
 
   kubernetes_version            = try(each.value.cluster.kubernetes_version, "1.33")
@@ -63,7 +63,7 @@ module "irsa" {
   for_each = var.eks
   source   = "./modules/irsa"
 
-  cluster_name        = each.key
+  cluster_name        = var.name_prefix != "" ? "${var.name_prefix}-${each.key}" : each.key
   oidc_issuer_url     = module.cluster[each.key].oidc_issuer_url
   oidc_provider_arn   = module.cluster[each.key].oidc_provider_arn
   karpenter_enabled   = try(each.value.addons.karpenter, false)
@@ -146,7 +146,7 @@ resource "local_file" "bootstrap_tfvars" {
 
   filename = "${path.module}/bootstrap/generated/${each.key}.tfvars.json"
   content = jsonencode({
-    cluster_name     = each.key
+    cluster_name     = var.name_prefix != "" ? "${var.name_prefix}-${each.key}" : each.key
     cluster_region   = local.cluster_region[each.key]
     cluster_version  = module.cluster[each.key].cluster_version
     cluster_endpoint = module.cluster[each.key].cluster_endpoint

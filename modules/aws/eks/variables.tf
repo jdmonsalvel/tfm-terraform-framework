@@ -235,5 +235,11 @@ variable "eks" {
   }
 }
 
+variable "name_prefix" {
+  description = "Prefix applied to resource names: project-environment"
+  type        = string
+  default     = ""
+}
+
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}

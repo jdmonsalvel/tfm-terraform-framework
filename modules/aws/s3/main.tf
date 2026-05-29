@@ -15,7 +15,7 @@ resource "aws_s3_bucket" "bucket" {
     }
   }
 
-  tags = merge(var.tags, each.value.tags, { Name = each.value.name })
+  tags = merge(var.tags, each.value.tags, { Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name })
 }
 
 # ──────────────────────────────────────────────────────────────────────────────

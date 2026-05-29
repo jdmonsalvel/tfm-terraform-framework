@@ -11,7 +11,7 @@ resource "aws_ecr_repository" "repo" {
   #checkov:skip=CKV_AWS_51:image_tag_mutability configurable by caller; IMMUTABLE recommended but not enforced
   for_each = var.ecr_repositories
 
-  name                 = each.value.name
+  name                 = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name
   image_tag_mutability = each.value.image_tag_mutability
   force_delete         = each.value.force_delete
 
@@ -24,7 +24,7 @@ resource "aws_ecr_repository" "repo" {
     kms_key         = each.value.encryption_type == "KMS" ? each.value.kms_key_arn : null
   }
 
-  tags = merge(var.tags, each.value.tags, { Name = each.value.name })
+  tags = merge(var.tags, each.value.tags, { Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name })
 }
 
 # ──────────────────────────────────────────────────────────────────────────────

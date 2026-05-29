@@ -4,7 +4,7 @@ resource "aws_eip" "elastic_ip" {
   tags = merge(
     var.tags,
     {
-      Name = "${each.value.name}"
+      Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name
     }
   )
 }
@@ -19,7 +19,7 @@ resource "aws_nat_gateway" "nat_gateway" {
   tags = merge(
     var.tags,
     {
-      Name = "${each.value.name}"
+      Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name
     }
   )
 }
