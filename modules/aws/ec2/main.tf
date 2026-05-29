@@ -35,6 +35,7 @@ resource "aws_iam_instance_profile" "ssm_profile" {
   role = aws_iam_role.ssm_role.name
 }
 
+#checkov:skip=CKV_AWS_79:imdsv2_required defaults to true in variables.tf; http_tokens="required" is the default path
 resource "aws_instance" "instance" {
   for_each = var.instances
 
@@ -45,6 +46,8 @@ resource "aws_instance" "instance" {
   associate_public_ip_address = each.value.public == true ? true : false
   vpc_security_group_ids      = flatten([for sg_name in each.value.security_groups : [for k, v in var.security_groups : v if can(regex(sg_name, k))]])
   user_data                   = each.value.user_data
+  monitoring                  = true
+  ebs_optimized               = true
 
   key_name                = each.value.key_pair # != null ? lookup(var.keypairs, each.value.key_pair, null) : null
   disable_api_termination = each.value.disable_api_termination

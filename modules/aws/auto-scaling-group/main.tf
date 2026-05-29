@@ -1,11 +1,15 @@
+#checkov:skip=CKV_AWS_91:Access logging requires caller-supplied S3 bucket; enable via alb_access_logs in tfvars
+#checkov:skip=CKV_AWS_150:Deletion protection disabled by design; caller controls lifecycle
 resource "aws_lb" "this" {
-  for_each           = var.autoscaling_groups
-  name               = "${each.value.name}-alb"
-  internal           = each.value.alb_internal
-  load_balancer_type = "application"
-  security_groups    = each.value.alb_security_groups != null ? flatten([for sg_name in each.value.alb_security_groups : [for k, v in var.security_groups : v if can(regex(sg_name, k))]]) : []
-  subnets            = flatten([for alb_sn_name in each.value.alb_subnets : [for k, v in var.subnets : v if can(regex(alb_sn_name, k))]])
-  region             = var.region
+  for_each                   = var.autoscaling_groups
+  name                       = "${each.value.name}-alb"
+  internal                   = each.value.alb_internal
+  load_balancer_type         = "application"
+  security_groups            = each.value.alb_security_groups != null ? flatten([for sg_name in each.value.alb_security_groups : [for k, v in var.security_groups : v if can(regex(sg_name, k))]]) : []
+  subnets                    = flatten([for alb_sn_name in each.value.alb_subnets : [for k, v in var.subnets : v if can(regex(alb_sn_name, k))]])
+  region                     = var.region
+  drop_invalid_header_fields = true
+  enable_deletion_protection = false
   tags = merge(each.value.tags, {
     Name = "${each.value.name}-alb"
   })
@@ -45,6 +49,7 @@ resource "aws_lb_target_group" "this" {
   })
 }
 
+#checkov:skip=CKV_AWS_2:HTTP listener intentional for HTTP→HTTPS redirect pattern; caller configures HTTPS listener separately
 resource "aws_lb_listener" "http" {
   for_each          = var.autoscaling_groups
   load_balancer_arn = aws_lb.this[each.key].arn
@@ -72,6 +77,7 @@ resource "aws_lb_listener" "https" {
   }
 }
 
+#checkov:skip=CKV_AWS_79:imdsv2_required defaults to true in variables.tf; http_tokens="required" is the default path
 resource "aws_launch_template" "this" {
   for_each               = var.autoscaling_groups
   region                 = var.region
