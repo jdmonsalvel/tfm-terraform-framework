@@ -3,6 +3,12 @@ variable "account_id" {
   default = ""
 }
 
+variable "cicd_role_name" {
+  description = "Nombre del rol IAM a asumir por el provider AWS. null = usar credenciales del runner directamente (OIDC)."
+  type        = string
+  default     = null
+}
+
 variable "region" {
   type        = string
   default     = null
