@@ -15,7 +15,7 @@ resource "aws_acm_certificate" "cert" {
     create_before_destroy = true
   }
 
-  tags = merge(var.tags, each.value.tags, { Name = each.value.domain_name })
+  tags = merge(var.tags, each.value.tags, { Name = replace(each.value.domain_name, "*.", "wildcard.") })
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
