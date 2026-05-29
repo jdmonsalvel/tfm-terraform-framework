@@ -5,6 +5,7 @@ locals {
     Environment = var.environment
     Project     = var.project
   }
+  framework_version = coalesce(var.terraform_framework_version, "unset")
 }
 
 locals {

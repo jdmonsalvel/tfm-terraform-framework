@@ -533,3 +533,9 @@ variable "security_group_rules" {
     error_message = "Cada regla debe tener exactamente uno de: source_sg_name o cidr_ipv4."
   }
 }
+
+variable "terraform_framework_version" {
+  description = "Versión del tfm-terraform-framework declarada en el tfvars. Informativo: no afecta recursos. El pipeline la lee para clonar el wrapper en esa versión exacta. Si no se define, el pipeline usa la release más reciente."
+  type        = string
+  default     = null
+}

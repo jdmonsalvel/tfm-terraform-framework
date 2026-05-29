@@ -251,3 +251,8 @@ output "secret_ids" {
   description = "Map de nombre_clave → path del secreto en Secrets Manager"
   value       = length(module.secrets_manager) > 0 ? module.secrets_manager[0].secret_ids : {}
 }
+
+output "framework_version" {
+  description = "Versión del tfm-terraform-framework usada en este despliegue"
+  value       = local.framework_version
+}
