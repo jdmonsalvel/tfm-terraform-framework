@@ -9,12 +9,12 @@ variable "instance_schedulers" {
     role = string # "hub" | "spoke"
 
     # ── CloudFormation — parámetros del stack hub ───────────────────────────────
-    namespace  = optional(string, "default")
-    tag_name   = optional(string, "Schedule")
+    namespace = optional(string, "default")
+    tag_name  = optional(string, "Schedule")
 
-    default_timezone   = optional(string, "UTC")
-    regions            = optional(list(string), []) # [] = región del stack
-    scheduler_frequency = optional(number, 5)       # minutos entre ejecuciones
+    default_timezone    = optional(string, "UTC")
+    regions             = optional(list(string), []) # [] = región del stack
+    scheduler_frequency = optional(number, 5)        # minutos entre ejecuciones
 
     scheduling_active              = optional(bool, true)
     create_rds_snapshot            = optional(bool, false)

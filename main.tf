@@ -111,14 +111,14 @@ module "kms" {
 }
 
 module "iam" {
-  count               = (length(var.iam_roles) + length(var.iam_policies) + length(var.iam_users) + length(var.iam_groups) + length(var.iam_oidc_providers)) > 0 ? 1 : 0
-  source              = "./modules/aws/iam"
-  tags                = local.tags
-  iam_roles           = var.iam_roles
-  iam_policies        = var.iam_policies
-  iam_users           = var.iam_users
-  iam_groups          = var.iam_groups
-  iam_oidc_providers  = var.iam_oidc_providers
+  count              = (length(var.iam_roles) + length(var.iam_policies) + length(var.iam_users) + length(var.iam_groups) + length(var.iam_oidc_providers)) > 0 ? 1 : 0
+  source             = "./modules/aws/iam"
+  tags               = local.tags
+  iam_roles          = var.iam_roles
+  iam_policies       = var.iam_policies
+  iam_users          = var.iam_users
+  iam_groups         = var.iam_groups
+  iam_oidc_providers = var.iam_oidc_providers
 }
 
 module "regional_nat_gw" {
