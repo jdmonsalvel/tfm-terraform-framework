@@ -111,6 +111,37 @@ module "node_group" {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
+# CAPA 1 — FASE D.2: Addons que requieren nodos (coredns, ebs-csi)
+# Se crean DESPUÉS de los node groups para evitar el deadlock de ACTIVE state.
+# ──────────────────────────────────────────────────────────────────────────────
+
+resource "aws_eks_addon" "coredns" {
+  for_each = { for k, v in var.eks : k => v if try(v.cluster.addons.coredns, true) }
+
+  cluster_name                = module.cluster[each.key].cluster_name
+  addon_name                  = "coredns"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  tags = merge(var.tags, try(each.value.tags, {}))
+
+  depends_on = [module.node_group]
+}
+
+resource "aws_eks_addon" "ebs_csi" {
+  for_each = { for k, v in var.eks : k => v if try(v.cluster.addons.ebs_csi, true) }
+
+  cluster_name                = module.cluster[each.key].cluster_name
+  addon_name                  = "aws-ebs-csi-driver"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  tags = merge(var.tags, try(each.value.tags, {}))
+
+  depends_on = [module.node_group]
+}
+
+# ──────────────────────────────────────────────────────────────────────────────
 # CAPA 1 — FASE E: Access Entries / aws-auth
 # ──────────────────────────────────────────────────────────────────────────────
 

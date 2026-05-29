@@ -127,25 +127,19 @@ resource "aws_iam_openid_connect_provider" "cluster" {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# EKS MANAGED ADDONS (coredns, kube-proxy, vpc-cni, ebs-csi)
-# Estos addons son AWS managed — no Helm
+# EKS MANAGED ADDONS — solo los que NO requieren nodos para activarse
+# vpc-cni y kube-proxy son DaemonSets que AWS marca ACTIVE al instalarlos.
+# coredns y ebs-csi se crean en el módulo padre DESPUÉS de los node groups
+# para evitar el deadlock: addon espera ACTIVE, pero ACTIVE requiere nodos,
+# y nodos esperan a que este módulo complete.
 # ──────────────────────────────────────────────────────────────────────────────
-
-resource "aws_eks_addon" "coredns" {
-  count = try(var.addons.coredns, true) ? 1 : 0
-
-  cluster_name                = aws_eks_cluster.cluster.name
-  addon_name                  = "coredns"
-  resolve_conflicts_on_update = "OVERWRITE"
-
-  tags = merge(var.tags, var.cluster_tags)
-}
 
 resource "aws_eks_addon" "kube_proxy" {
   count = try(var.addons.kube_proxy, true) ? 1 : 0
 
   cluster_name                = aws_eks_cluster.cluster.name
   addon_name                  = "kube-proxy"
+  resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
 
   tags = merge(var.tags, var.cluster_tags)
@@ -156,16 +150,7 @@ resource "aws_eks_addon" "vpc_cni" {
 
   cluster_name                = aws_eks_cluster.cluster.name
   addon_name                  = "vpc-cni"
-  resolve_conflicts_on_update = "OVERWRITE"
-
-  tags = merge(var.tags, var.cluster_tags)
-}
-
-resource "aws_eks_addon" "ebs_csi" {
-  count = try(var.addons.ebs_csi, true) ? 1 : 0
-
-  cluster_name                = aws_eks_cluster.cluster.name
-  addon_name                  = "aws-ebs-csi-driver"
+  resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
 
   tags = merge(var.tags, var.cluster_tags)
