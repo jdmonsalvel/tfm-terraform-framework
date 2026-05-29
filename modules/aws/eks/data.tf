@@ -1,6 +1,3 @@
-data "aws_caller_identity" "current" {}
-data "aws_region" "current" {}
-
 # Lookup dinámico de usuarios IAM por nombre para EKS access entries.
 # Falla en plan si el usuario no existe — comportamiento intencionado.
 locals {
