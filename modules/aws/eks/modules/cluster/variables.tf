@@ -28,7 +28,7 @@ variable "enable_cluster_creator_admin" {
 
 variable "enabled_log_types" {
   type    = list(string)
-  default = ["api", "audit", "authenticator"]
+  default = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 }
 
 variable "kms_key_arn" {

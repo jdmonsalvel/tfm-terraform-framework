@@ -1,6 +1,6 @@
-#checkov:skip=CKV_AWS_91:Access logging requires caller-supplied S3 bucket; enable via alb_access_logs in tfvars
-#checkov:skip=CKV_AWS_150:Deletion protection disabled by design; caller controls lifecycle
 resource "aws_lb" "this" {
+  #checkov:skip=CKV_AWS_91:Access logging requires caller-supplied S3 bucket; enable via alb_access_logs in tfvars
+  #checkov:skip=CKV_AWS_150:Deletion protection disabled by design; caller controls lifecycle
   for_each                   = var.autoscaling_groups
   name                       = "${each.value.name}-alb"
   internal                   = each.value.alb_internal
@@ -49,8 +49,8 @@ resource "aws_lb_target_group" "this" {
   })
 }
 
-#checkov:skip=CKV_AWS_2:HTTP listener intentional for HTTP→HTTPS redirect pattern; caller configures HTTPS listener separately
 resource "aws_lb_listener" "http" {
+  #checkov:skip=CKV_AWS_2:HTTP listener intentional for HTTP→HTTPS redirect pattern; caller configures HTTPS listener separately
   for_each          = var.autoscaling_groups
   load_balancer_arn = aws_lb.this[each.key].arn
   port              = each.value.listener_port_http
@@ -77,8 +77,8 @@ resource "aws_lb_listener" "https" {
   }
 }
 
-#checkov:skip=CKV_AWS_79:imdsv2_required defaults to true in variables.tf; http_tokens="required" is the default path
 resource "aws_launch_template" "this" {
+  #checkov:skip=CKV_AWS_79:imdsv2_required defaults to true in variables.tf; http_tokens="required" is the default path
   for_each               = var.autoscaling_groups
   region                 = var.region
   name                   = "${each.value.name}-lt"

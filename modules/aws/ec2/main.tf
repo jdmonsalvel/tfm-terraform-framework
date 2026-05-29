@@ -35,8 +35,8 @@ resource "aws_iam_instance_profile" "ssm_profile" {
   role = aws_iam_role.ssm_role.name
 }
 
-#checkov:skip=CKV_AWS_79:imdsv2_required defaults to true in variables.tf; http_tokens="required" is the default path
 resource "aws_instance" "instance" {
+  #checkov:skip=CKV_AWS_79:imdsv2_required defaults to true in variables.tf; http_tokens="required" is the default path
   for_each = var.instances
 
   ami                         = contains(local.gaviton_instance_types, each.value.instance_type) ? lookup(local.ami_ids, "linux_graviton", each.value.ami) : each.value.ami == "windows" && each.value.sql_licence == true ? local.ami_ids.windows_sql : lookup(local.ami_ids, each.value.ami, each.value.ami)

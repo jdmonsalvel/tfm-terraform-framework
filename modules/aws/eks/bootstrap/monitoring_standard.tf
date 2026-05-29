@@ -20,6 +20,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "monitoring" {
     status = "Enabled"
     expiration { days = local.retention_days }
     filter { prefix = "" }
+    abort_incomplete_multipart_upload { days_after_initiation = 7 }
   }
 }
 

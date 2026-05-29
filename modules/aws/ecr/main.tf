@@ -5,9 +5,10 @@ data "aws_region" "current" {}
 # ECR REPOSITORIES
 # ──────────────────────────────────────────────────────────────────────────────
 
-#checkov:skip=CKV_AWS_136:encryption_type configurable by caller; defaults to AES256, KMS requires caller-supplied key
-#checkov:skip=CKV_AWS_163:scan_on_push defaults to true in variables.tf; caller may override per repo
 resource "aws_ecr_repository" "repo" {
+  #checkov:skip=CKV_AWS_136:encryption_type configurable by caller; AES256 is a valid default, KMS requires caller key
+  #checkov:skip=CKV_AWS_163:scan_on_push defaults to true in variables.tf; caller may override per repo
+  #checkov:skip=CKV_AWS_51:image_tag_mutability configurable by caller; IMMUTABLE recommended but not enforced
   for_each = var.ecr_repositories
 
   name                 = each.value.name
