@@ -63,6 +63,7 @@ variable "eks" {
 
       admins = optional(object({
         principal_arns      = optional(list(string), [])
+        usernames           = optional(list(string), [])
         kubernetes_groups   = optional(list(string), ["platform-admins"])
         policy_associations = optional(list(string), ["arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"])
       }), {})

@@ -153,7 +153,14 @@ module "access" {
   authentication_mode = try(each.value.cluster.authentication_mode, "API_AND_CONFIG_MAP")
   auth_mode           = try(each.value.auth.mode, "access_entries")
 
-  admins                    = try(each.value.auth.admins, {})
+  admins = {
+    principal_arns = concat(
+      try(each.value.auth.admins.principal_arns, []),
+      [for u in try(each.value.auth.admins.usernames, []) : data.aws_iam_user.admin_by_name[u].arn]
+    )
+    kubernetes_groups   = try(each.value.auth.admins.kubernetes_groups, ["platform-admins"])
+    policy_associations = try(each.value.auth.admins.policy_associations, ["arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"])
+  }
   developers                = try(each.value.auth.developers, {})
   readonly                  = try(each.value.auth.readonly, {})
   additional_access_entries = try(each.value.auth.additional_access_entries, {})
