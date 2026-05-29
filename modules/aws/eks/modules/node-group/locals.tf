@@ -21,13 +21,14 @@ locals {
   USERDATA
 
   # Todos los node groups en un mapa unificado (cluster-tools + workload)
+  # cluster-tools solo se crea si cluster_tools_node_group != null
   all_node_groups = merge(
-    {
+    var.cluster_tools_node_group != null ? {
       "cluster-tools" = {
         config         = var.cluster_tools_node_group
         is_tools_group = true
       }
-    },
+    } : {},
     {
       for k, v in var.workload_node_groups : k => {
         config         = v

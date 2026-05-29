@@ -48,7 +48,7 @@ variable "cluster_tools_node_group" {
     additional_userdata = optional(string, null)
     tags                = optional(map(string), {})
   })
-  default = {}
+  default = null
 }
 
 variable "workload_node_groups" {
