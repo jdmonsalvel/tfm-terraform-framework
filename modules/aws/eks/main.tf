@@ -102,7 +102,7 @@ module "node_group" {
   node_role_arn        = module.iam[each.key].node_role_arn
   subnet_ids           = each.value.network.subnet_ids
 
-  cluster_tools_node_group = try(each.value.compute.cluster_tools_node_group, {})
+  cluster_tools_node_group = try(each.value.compute.cluster_tools_node_group, null)
   workload_node_groups     = try(each.value.compute.workload_node_groups, {})
 
   tags = merge(var.tags, try(each.value.tags, {}))
