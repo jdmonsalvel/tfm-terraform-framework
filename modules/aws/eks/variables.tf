@@ -161,7 +161,7 @@ variable "eks" {
         })), [{ key = "CriticalAddonsOnly", value = "true", effect = "NO_SCHEDULE" }])
         additional_userdata = optional(string, null)
         tags                = optional(map(string), {})
-      }), {})
+      }), null)
 
       workload_node_groups = optional(map(object({
         capacity_type  = optional(string, "ON_DEMAND")
