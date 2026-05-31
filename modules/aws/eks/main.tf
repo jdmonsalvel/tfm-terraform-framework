@@ -176,7 +176,7 @@ module "access" {
 # ──────────────────────────────────────────────────────────────────────────────
 
 locals {
-  cluster_region = { for k, v in var.eks : k => try(v.account.region, data.aws_region.current.name) }
+  cluster_region = { for k, v in var.eks : k => try(v.account.region, var.region) }
 }
 
 resource "local_file" "bootstrap_tfvars" {
