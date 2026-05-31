@@ -143,6 +143,7 @@ module "eks" {
   name_prefix    = local.name_prefix
   backend_bucket = var.eks_backend_bucket
   backend_region = var.eks_backend_region
+  region         = var.region
 
   # Resuelve nombres de VPC/subnet a IDs usando los outputs de los módulos de red.
   # En el tfvars se usan claves (vpc_name, subnet_names) en lugar de IDs hardcodeados.

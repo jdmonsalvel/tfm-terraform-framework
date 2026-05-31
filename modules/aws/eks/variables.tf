@@ -242,5 +242,11 @@ variable "name_prefix" {
   default     = ""
 }
 
+variable "region" {
+  description = "AWS region donde se despliega el clúster EKS"
+  type        = string
+  default     = "eu-west-1"
+}
+
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
