@@ -31,13 +31,13 @@ CLUSTER_REGION=$(python3 -c "import json; print(json.load(open('$TFVARS_JSON'))[
 log "Clúster: $CLUSTER_NAME  |  Región: $CLUSTER_REGION"
 log "Configurando kubectl..."
 
-aws eks update-kubeconfig \
-    --name "$CLUSTER_NAME" \
-    --region "$CLUSTER_REGION"
-
-log "kubectl configurado correctamente."
-log "Nodos disponibles:"
-kubectl get nodes --no-headers 2>/dev/null || warn "kubectl aún no puede conectar — los nodos pueden tardar unos segundos."
+if aws eks update-kubeconfig --name "$CLUSTER_NAME" --region "$CLUSTER_REGION" 2>/dev/null; then
+    log "kubectl configurado correctamente."
+    kubectl get nodes --no-headers 2>/dev/null || warn "Nodos aún no disponibles — normal en los primeros segundos."
+else
+    warn "update-kubeconfig falló (puede que el endpoint sea privado desde este equipo)."
+    warn "Ejecuta manualmente: aws eks update-kubeconfig --name $CLUSTER_NAME --region $CLUSTER_REGION"
+fi
 
 log "Modo GitOps activo — ArgoCD gestionará los addons Helm."
 log "Para iniciar la sincronización, aplica el App of Apps desde el repo gitops:"
