@@ -266,3 +266,12 @@ resource "aws_vpc_security_group_ingress_rule" "cross_sg" {
 
   tags = merge(local.tags, { Name = each.key })
 }
+
+# ─── Cloudflare DNS ──────────────────────────────────────────────────────────
+module "cloudflare_dns" {
+  count  = length(var.cloudflare_records) > 0 ? 1 : 0
+  source = "./modules/cloudflare/dns"
+
+  zone_id = var.cloudflare_zone_id
+  records = var.cloudflare_records
+}

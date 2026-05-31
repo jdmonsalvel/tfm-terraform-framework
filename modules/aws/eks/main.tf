@@ -240,8 +240,9 @@ resource "terraform_data" "bootstrap" {
   input = local_file.bootstrap_tfvars[each.key].content
 
   provisioner "local-exec" {
-    command = <<-EOT
-      bash "${path.module}/../../../scripts/bootstrap.sh" \
+    working_dir = "${path.module}/../../.."
+    command     = <<-EOT
+      bash "scripts/bootstrap.sh" \
         "${each.key}" \
         "${path.module}/bootstrap" \
         "${path.module}/bootstrap/generated/${each.key}.tfvars.json"

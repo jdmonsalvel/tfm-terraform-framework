@@ -9,6 +9,32 @@ variable "devops_service_account_id" {
   default     = null
 }
 
+variable "cloudflare_api_token" {
+  description = "Token API de Cloudflare. Inyectado como TF_VAR_cloudflare_api_token desde CI secret."
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
+variable "cloudflare_zone_id" {
+  description = "Zone ID de Cloudflare para el dominio gestionado."
+  type        = string
+  default     = null
+}
+
+variable "cloudflare_records" {
+  description = "Registros DNS a gestionar en Cloudflare. NLB CNAMEs se añaden por scripts/setup-dns.sh post-bootstrap."
+  type = map(object({
+    name    = string
+    value   = string
+    type    = string
+    ttl     = optional(number, 1)
+    proxied = optional(bool, false)
+    comment = optional(string, "managed by terraform")
+  }))
+  default = {}
+}
+
 variable "cicd_role_name" {
   description = "Nombre del rol IAM a asumir por el provider AWS. null = usar credenciales del runner directamente (OIDC)."
   type        = string
