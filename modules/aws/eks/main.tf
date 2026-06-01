@@ -213,6 +213,7 @@ resource "local_file" "bootstrap_tfvars" {
       keda                         = try(each.value.addons.keda, false)
       cluster_autoscaler           = try(each.value.addons.cluster_autoscaler, false)
       reloader                     = try(each.value.addons.reloader, false)
+      ingress_nginx                = try(each.value.addons.ingress_nginx, true)
     }
 
     helm_versions     = local.helm_versions[each.key]

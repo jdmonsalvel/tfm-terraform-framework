@@ -61,6 +61,7 @@ variable "addons" {
     keda                         = optional(bool, false)
     cluster_autoscaler           = optional(bool, false)
     reloader                     = optional(bool, false)
+    ingress_nginx                = optional(bool, true)
     helm_chart_versions          = optional(map(string), {})
   })
   default = {}

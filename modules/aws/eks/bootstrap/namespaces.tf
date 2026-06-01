@@ -11,6 +11,7 @@ locals {
     try(var.addons.karpenter, false) ? "karpenter" : null,
     try(var.addons.keda, false) ? "keda" : null,
     var.monitoring.mode != "disabled" ? "monitoring" : null,
+    try(var.addons.ingress_nginx, true) ? "ingress-nginx" : null,
   ]))
 }
 
