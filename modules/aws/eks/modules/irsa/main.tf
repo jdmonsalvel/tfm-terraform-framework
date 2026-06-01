@@ -45,10 +45,10 @@ resource "aws_iam_policy" "aws_lb_controller" {
         Effect = "Allow"
         Action = [
           "ec2:DescribeAccountAttributes", "ec2:DescribeAddresses", "ec2:DescribeAvailabilityZones",
-          "ec2:DescribeInternetGateways", "ec2:DescribeVpcs", "ec2:DescribeVpcPeeringConnections",
-          "ec2:DescribeSubnets", "ec2:DescribeSecurityGroups", "ec2:DescribeInstances",
-          "ec2:DescribeNetworkInterfaces", "ec2:DescribeTags", "ec2:GetCoipPoolUsage",
-          "ec2:DescribeCoipPools", "elasticloadbalancing:DescribeLoadBalancers",
+          "ec2:DescribeInternetGateways", "ec2:DescribeRouteTables", "ec2:DescribeVpcs",
+          "ec2:DescribeVpcPeeringConnections", "ec2:DescribeSubnets", "ec2:DescribeSecurityGroups",
+          "ec2:DescribeInstances", "ec2:DescribeNetworkInterfaces", "ec2:DescribeTags",
+          "ec2:GetCoipPoolUsage", "ec2:DescribeCoipPools", "elasticloadbalancing:DescribeLoadBalancers",
           "elasticloadbalancing:DescribeLoadBalancerAttributes", "elasticloadbalancing:DescribeListeners",
           "elasticloadbalancing:DescribeListenerCertificates", "elasticloadbalancing:DescribeSSLPolicies",
           "elasticloadbalancing:DescribeRules", "elasticloadbalancing:DescribeTargetGroups",

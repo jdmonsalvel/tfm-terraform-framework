@@ -33,5 +33,9 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 4.0"
     }
+    archive = {
+      source  = "hashicorp/archive"
+      version = ">= 2.4.0"
+    }
   }
 }

@@ -215,6 +215,14 @@ variable "eks" {
       }), {})
     }), {})
 
+    node_scheduler = optional(object({
+      enabled              = optional(bool, false)
+      # Cron en UTC — formato AWS EventBridge: "Minutos Horas Dia Mes DiaSemana Año"
+      # Ejemplo España CEST (UTC+2): apagar 22:00 UTC = 00:00 local / encender 14:00 UTC = 16:00 local
+      scale_down_cron_utc  = optional(string, "0 22 * * ? *")
+      scale_up_cron_utc    = optional(string, "0 14 * * ? *")
+    }), {})
+
     tags = optional(map(string), {})
   }))
 
