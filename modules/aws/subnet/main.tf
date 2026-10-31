@@ -7,6 +7,7 @@ resource "aws_subnet" "subnet" {
   map_public_ip_on_launch = each.value.ip_public_auto ? true : false
   tags = merge(
     var.tags,
+    coalesce(each.value.tags, {}),
     {
       Name = var.name_prefix != "" ? "${var.name_prefix}-${each.value.name}" : each.value.name
     }
