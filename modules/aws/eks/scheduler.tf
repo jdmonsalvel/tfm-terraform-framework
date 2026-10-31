@@ -119,7 +119,7 @@ resource "aws_lambda_function" "node_scheduler" {
 
   environment {
     variables = {
-      CLUSTER_NAME       = var.name_prefix != "" ? "${var.name_prefix}-${each.key}" : each.key
+      CLUSTER_NAME = var.name_prefix != "" ? "${var.name_prefix}-${each.key}" : each.key
       NODE_GROUPS_CONFIG = jsonencode([
         for ng_name, ng_cfg in try(each.value.compute.workload_node_groups, {}) : {
           name    = ng_name
