@@ -176,7 +176,9 @@ module "access" {
 # ──────────────────────────────────────────────────────────────────────────────
 
 locals {
-  cluster_region = { for k, v in var.eks : k => try(v.account.region, var.region) }
+  # account.region es opcional y llega como null en cuenta única: try() no lo
+  # descarta, coalesce() sí.
+  cluster_region = { for k, v in var.eks : k => coalesce(try(v.account.region, null), var.region) }
 }
 
 resource "local_file" "bootstrap_tfvars" {
@@ -225,7 +227,7 @@ resource "local_file" "bootstrap_tfvars" {
 
     backend_bucket  = var.backend_bucket
     backend_region  = var.backend_region
-    assume_role_arn = try(each.value.account.assume_role_arn, "")
+    assume_role_arn = try(each.value.account.assume_role_arn, null) == null ? "" : each.value.account.assume_role_arn
   })
 
   depends_on = [
