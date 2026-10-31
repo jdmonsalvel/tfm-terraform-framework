@@ -48,7 +48,8 @@ resource "aws_iam_policy" "aws_lb_controller" {
           "ec2:DescribeInternetGateways", "ec2:DescribeRouteTables", "ec2:DescribeVpcs",
           "ec2:DescribeVpcPeeringConnections", "ec2:DescribeSubnets", "ec2:DescribeSecurityGroups",
           "ec2:DescribeInstances", "ec2:DescribeNetworkInterfaces", "ec2:DescribeTags",
-          "ec2:GetCoipPoolUsage", "ec2:DescribeCoipPools", "elasticloadbalancing:DescribeLoadBalancers",
+          "ec2:GetCoipPoolUsage", "ec2:DescribeCoipPools", "ec2:GetSecurityGroupsForVpc",
+          "elasticloadbalancing:DescribeLoadBalancers", "elasticloadbalancing:DescribeListenerAttributes",
           "elasticloadbalancing:DescribeLoadBalancerAttributes", "elasticloadbalancing:DescribeListeners",
           "elasticloadbalancing:DescribeListenerCertificates", "elasticloadbalancing:DescribeSSLPolicies",
           "elasticloadbalancing:DescribeRules", "elasticloadbalancing:DescribeTargetGroups",
@@ -102,7 +103,12 @@ resource "aws_iam_policy" "aws_lb_controller" {
         Resource = [
           "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*",
           "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
-          "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*"
+          "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*",
+          # LBC >= 2.10 etiqueta listeners y reglas al crearlos
+          "arn:aws:elasticloadbalancing:*:*:listener/net/*/*/*",
+          "arn:aws:elasticloadbalancing:*:*:listener/app/*/*/*",
+          "arn:aws:elasticloadbalancing:*:*:listener-rule/net/*/*/*",
+          "arn:aws:elasticloadbalancing:*:*:listener-rule/app/*/*/*"
         ]
       },
       {
@@ -111,7 +117,8 @@ resource "aws_iam_policy" "aws_lb_controller" {
           "elasticloadbalancing:ModifyLoadBalancerAttributes", "elasticloadbalancing:SetIpAddressType",
           "elasticloadbalancing:SetSecurityGroups", "elasticloadbalancing:SetSubnets",
           "elasticloadbalancing:DeleteLoadBalancer", "elasticloadbalancing:ModifyTargetGroup",
-          "elasticloadbalancing:ModifyTargetGroupAttributes", "elasticloadbalancing:DeleteTargetGroup"
+          "elasticloadbalancing:ModifyTargetGroupAttributes", "elasticloadbalancing:DeleteTargetGroup",
+          "elasticloadbalancing:ModifyListenerAttributes"
         ]
         Resource = "*"
       },

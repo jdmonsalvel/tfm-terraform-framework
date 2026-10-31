@@ -22,6 +22,8 @@ log()  { echo -e "${GREEN}[bootstrap:${CLUSTER_KEY}]${NC} $1"; }
 warn() { echo -e "${YELLOW}[bootstrap:${CLUSTER_KEY}]${NC} $1"; }
 
 [ ! -f "$TFVARS_JSON" ] && { warn "tfvars.json no encontrado: $TFVARS_JSON"; exit 1; }
+# Ruta absoluta: terraform -chdir resuelve -var-file desde BOOTSTRAP_DIR.
+TFVARS_JSON="$(realpath "$TFVARS_JSON")"
 
 CLUSTER_NAME=$(python3 -c "import json; print(json.load(open('$TFVARS_JSON'))['cluster_name'])")
 CLUSTER_REGION=$(python3 -c "import json; print(json.load(open('$TFVARS_JSON'))['cluster_region'])")
